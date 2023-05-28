@@ -7,6 +7,7 @@
 #include <ctype.h>
 #include <string.h>
 #include <stdbool.h>
+#include <limits.h>
 #include <readline/readline.h>
 #include <readline/history.h>
 
@@ -91,21 +92,9 @@ void	ft_lstadd_back_double(t_lexer **lst, t_lexer *new);
 void	execution(t_tree *node);
 void	post_order(t_tree *root);
 
-
-// t_tree	*build_tree_ps(t_lexer *nodes);
-// t_tree	*and_or_case_ps(t_lexer **nodes);
-// t_tree	*pipe_case_ps(t_lexer **nodes);
-// t_tree *operator_node_ps(t_lexer **nodes);
-// t_tree	*cmd_node_ps(t_lexer **nodes);
-// t_tree	*switch_root(t_tree *new_root, t_tree *old_root);
-// t_tree	*newnode_ps(char *data, t_tokens type);
-// t_token		*create_token(int type, char  *value);
-// t_lexer		*create_lexer(char *content);
-// void		next_command_lexer(t_lexer *lexer);
-// void		skip_whitespace(t_lexer *lexer);
-// t_token		*get_next_token(t_lexer *lexer);
-// t_token		*collect_string(t_lexer *lexer);//to parse strings between "" ex: "hello world hh"
-// t_token		*collect_words(t_lexer *lexer);
-// char		*get_current_char_as_string(t_lexer *lexer);
+/*  builtins  */
+void	ft_echo(t_list *head);
+void	ft_pwd(void);
+int	ft_cd(t_list *head);
 
 #endif
