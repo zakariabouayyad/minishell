@@ -79,13 +79,8 @@ void printTree(t_tree *root, int level)
     for (i = 0; i < level; i++)
         printf("    ");
 
-    // printLinkedList(root->commands);
-	if (!root->str)
-		printf("no\n");
-	else
-		printf("{export = %s}\n", root->str);
-
-    // printLinkedList(root->redirection);
+    printLinkedList(root->commands);
+    printLinkedList(root->redirection);
 
     printTree(root->right, level + 1);
 }
@@ -199,35 +194,37 @@ t_tree	*for_export(t_tree *tree)
 	return (tree);
 }
 
-int main()
+int main(int ac, char *av[], char *envp[])
 {
 	char	*input;
 	t_lexer *tokens;
 	t_tree	*tree;
-
+	
+	ac = 1;
+	av = NULL;
 	while (1)
 	{
 		input = prompt();
 		add_history(input);
-		// if (double_checker_ps(input) == false)
-		// {
-		// 	printf("syntax error\n");
-		// 	continue;
-		// }
+		if (double_checker_ps(input) == false)
+		{
+			printf("syntax error\n");
+			continue;
+		}
 		tokens = lexer(input);
 		// remove_whitespace_from_list(tokens);
 		tokens = remove_node_ps(tokens, WHITE_SPACE);
-		// if(syntax_checker_ps(tokens) == false)
-		// {
-		// 	free(tokens);
-		// 	printf("syntax error\n");
-		// 	continue;
-		// }
+		if(syntax_checker_ps(tokens) == false)
+		{
+			free(tokens);
+			printf("syntax error\n");
+			continue;
+		}
 		// tokens = remove_quote(tokens);
 		// tokens = concatenate_nodes(tokens);
 		tree = build_tree_ps(tokens);
 		tree = for_export(tree);
-		post_order(tree);
+		post_order(tree, envp);
 		// print_hh(tree);
 		// print_tree(tree);
 		// printTree(tree, 0);

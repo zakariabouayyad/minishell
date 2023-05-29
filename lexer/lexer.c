@@ -26,6 +26,62 @@ t_lexer *new_token_ps(char *str, t_tokens token)
     return (token_node);
 }
 
+t_lexer	*pipe_or_or(char *input, int i, t_lexer *head, t_lexer *tail)
+{
+	int len = strlen(input);
+	
+	if (i + 1 < len && input[i + 1] == '|')
+	{
+        t_lexer *token_node = new_token_ps("||", OR);
+        if (tail == NULL)
+		{
+            head = token_node;
+            tail = token_node;
+        }
+		else
+		{
+            tail->next = token_node;
+			token_node->prev = tail;
+            tail = token_node;
+        }
+        i += 2;
+    }
+	else
+	{
+        t_lexer *token_node = new_token_ps("|", PIPE);
+        if (tail == NULL)
+		{
+            head = token_node;
+            tail = token_node;
+        }
+		else
+		{
+            tail->next = token_node;
+			token_node->prev = tail;
+            tail = token_node;
+        }
+        i++;
+    }
+	return (head);
+}
+
+
+void add_token(t_lexer **head, t_lexer **tail, char *token, t_tokens type)
+{
+    t_lexer *token_node = new_token_ps(token, type);
+    if (*tail == NULL)
+	{
+        *head = token_node;
+        *tail = token_node;
+    }
+    else
+	{
+        (*tail)->next = token_node;
+        token_node->prev = *tail;
+        *tail = token_node;
+    }
+}
+
 // Define the lexer function
 t_lexer *lexer(char *input)
 {
@@ -44,36 +100,15 @@ t_lexer *lexer(char *input)
         // Check for tokens
         if (input[i] == '|')
 		{
+			// head = pipe_or_or(input, i, head, tail);
             if (i + 1 < len && input[i + 1] == '|')
 			{
-                t_lexer *token_node = new_token_ps("||", OR);
-                if (tail == NULL)
-				{
-                    head = token_node;
-                    tail = token_node;
-                }
-				else
-				{
-                    tail->next = token_node;
-					token_node->prev = tail;
-                    tail = token_node;
-                }
+				add_token(&head, &tail, "||", OR);
                 i += 2;
             }
 			else
 			{
-                t_lexer *token_node = new_token_ps("|", PIPE);
-                if (tail == NULL)
-				{
-                    head = token_node;
-                    tail = token_node;
-                }
-				else
-				{
-                    tail->next = token_node;
-					token_node->prev = tail;
-                    tail = token_node;
-                }
+				add_token(&head, &tail, "|", PIPE);
                 i++;
             }
         }
@@ -81,18 +116,7 @@ t_lexer *lexer(char *input)
 		{
             if (i + 1 < len && input[i + 1] == '&')
 			{
-                t_lexer *token_node = new_token_ps("&&", AND);
-                if (tail == NULL)
-				{
-                    head = token_node;
-                    tail = token_node;
-                }
-				else
-				{
-                    tail->next = token_node;
-					token_node->prev = tail;
-                    tail = token_node;
-                }
+				add_token(&head, &tail, "&&", AND);
                 i += 2;
             }
         }
@@ -100,34 +124,12 @@ t_lexer *lexer(char *input)
 		{
             if (i + 1 < len && input[i + 1] == '<')
 			{
-                t_lexer *token_node = new_token_ps("<<", HERE_DOC);
-                if (tail == NULL)
-				{
-                    head = token_node;
-                    tail = token_node;
-                }
-				else
-				{
-                    tail->next = token_node;
-					token_node->prev = tail;
-                    tail = token_node;
-                }
+				add_token(&head, &tail, "<<", HERE_DOC);
                 i += 2;
             }
 			else
 			{
-                t_lexer *token_node = new_token_ps("<", INPUT);
-                if (tail == NULL)
-				{
-                    head = token_node;
-                    tail = token_node;
-                }
-				else
-				{
-                    tail->next = token_node;
-					token_node->prev = tail;
-                    tail = token_node;
-                }
+				add_token(&head, &tail, "<", INPUT);
                 i++;
             }
         }
@@ -135,34 +137,12 @@ t_lexer *lexer(char *input)
 		{
             if (i + 1 < len && input[i + 1] == '>')
 			{
-                t_lexer *token_node = new_token_ps(">>", OUTPUT_APPEND);
-                if (tail == NULL)
-				{
-                    head = token_node;
-                    tail = token_node;
-                } 
-				else
-				{
-                    tail->next = token_node;
-					token_node->prev = tail;
-                    tail = token_node;
-                }
+				add_token(&head, &tail, ">>", OUTPUT_APPEND);
                 i += 2;
             }
 			else
 			{
-                t_lexer *token_node = new_token_ps(">", OUTPUT);
-                if (tail == NULL)
-				{
-                    head = token_node;
-                    tail = token_node;
-                }
-				else
-				{
-                    tail->next = token_node;
-					token_node->prev = tail;
-                    tail = token_node;
-                }
+				add_token(&head, &tail, ">", OUTPUT);
                 i++;
             }
 	    }
@@ -181,18 +161,7 @@ t_lexer *lexer(char *input)
             char *word = malloc(word_len + 1);
             memcpy(word, &input[start], word_len);
             word[word_len] = '\0';
-            t_lexer *token_node = new_token_ps(word, S_QUOTED);
-            if (tail == NULL)
-			{
-                head = token_node;
-                tail = token_node;
-            }
-			else
-			{
-                tail->next = token_node;
-				token_node->prev = tail;
-                tail = token_node;
-            }
+				add_token(&head, &tail, word, S_QUOTED);
             i++; // Skip over quote character
         }
 		else if (input[i] == '\"')
@@ -212,18 +181,7 @@ t_lexer *lexer(char *input)
             	char *word = malloc(word_len + 1);
             	memcpy(word, &input[start], word_len);
             	word[word_len] = '\0';
-            	t_lexer *token_node = new_token_ps(word, D_QUOTED);
-            	if (tail == NULL)
-				{
-            	    head = token_node;
-            	    tail = token_node;
-            	}
-				else
-				{
-            	    tail->next = token_node;
-					token_node->prev = tail;
-            	    tail = token_node;
-            	}
+				add_token(&head, &tail, word, D_QUOTED);
             	i++; // Skip over quote character
 			}
         }
@@ -231,52 +189,19 @@ t_lexer *lexer(char *input)
 		{
 			while (i < len && input[i] == ' ')
 				i++;
-			t_lexer *token_node = new_token_ps(" ", WHITE_SPACE);
-			if (tail == NULL)
-			{
-				head = token_node;
-				tail = token_node;
-	        }
-			else 
-			{
-				tail->next = token_node;
-				token_node->prev = tail;
-				tail = token_node;
-			}
+				add_token(&head, &tail, " ", WHITE_SPACE);
 	    }
 		else if (input[i] == '(')
 		{
 			while (i < len && input[i] == '(')
 				i++;
-			t_lexer *token_node = new_token_ps("(", OPEN_PARENTHESIS);
-			if (tail == NULL)
-			{
-				head = token_node;
-				tail = token_node;
-	        }
-			else 
-			{
-				tail->next = token_node;
-				token_node->prev = tail;
-				tail = token_node;
-			}
+			add_token(&head, &tail, "(", OPEN_PARENTHESIS);
 		}
 		else if (input[i] == ')')
 		{
 			while (i < len && input[i] == ')')
 				i++;
-			t_lexer *token_node = new_token_ps(")", CLOSE_PARENTHESIS);
-			if (tail == NULL)
-			{
-				head = token_node;
-				tail = token_node;
-	        }
-			else 
-			{
-				tail->next = token_node;
-				token_node->prev = tail;
-				tail = token_node;
-			}
+			add_token(&head, &tail, ")", CLOSE_PARENTHESIS);
 		}
 		else if (input[i] == '$')
 		{
@@ -290,18 +215,7 @@ t_lexer *lexer(char *input)
 	        word = (char *)malloc(word_len + 1);
 	        memcpy(word, &input[start], word_len);
 	        word[word_len] = '\0';
-	        t_lexer *token_node = new_token_ps(word, DOLLAR);
-	        if (tail == NULL)
-			{
-	            head = token_node;
-	            tail = token_node;
-	        }
-			else 
-			{
-	            tail->next = token_node;
-				token_node->prev = tail;
-	            tail = token_node;
-	        }
+			add_token(&head, &tail, word, DOLLAR);
 	    }
 		else if (input[i] != ' ')
 		{
@@ -314,18 +228,7 @@ t_lexer *lexer(char *input)
 	        word = (char *)malloc(word_len + 1);
 	        memcpy(word, &input[start], word_len);
 	        word[word_len] = '\0';
-	        t_lexer *token_node = new_token_ps(word, WORD);
-	        if (tail == NULL)
-			{
-	            head = token_node;
-	            tail = token_node;
-	        }
-			else 
-			{
-	            tail->next = token_node;
-				token_node->prev = tail;
-	            tail = token_node;
-	        }
+			add_token(&head, &tail, word, WORD);
 	    }
 		else
 	        i++;

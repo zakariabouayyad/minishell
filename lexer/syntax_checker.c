@@ -9,7 +9,9 @@ bool	double_checker_ps(char *input)
 
 	while(input[i])
 	{
-		if (input[i] == '"')
+		if (input[i] == '$' && (!input[i + 1] || input[i + 1] == ' '))
+			return (false);
+		else if (input[i] == '"')
 			double_quote++;
 		else if (input[i] == '\'')
 			single_quote++;
@@ -40,7 +42,7 @@ bool	syntax_checker_ps(t_lexer *tokens)
 			if (!tokens->prev || !tokens->next || (tokens->next && tokens->next->type != WORD && tokens->next->type != OPEN_PARENTHESIS) || (tokens->prev && (tokens->prev->type != WORD && tokens->prev->type != CLOSE_PARENTHESIS)))
 				return (false);
 		}
-		else if (tokens->type == INPUT || tokens->type == OUTPUT || tokens->type == OUTPUT_APPEND || tokens->type == DOLLAR)
+		else if (tokens->type == INPUT || tokens->type == OUTPUT || tokens->type == OUTPUT_APPEND)
 		{
 			if (!tokens->next || (tokens->next && tokens->next->type != WORD))
 				return (false);

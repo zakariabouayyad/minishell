@@ -26,32 +26,56 @@
 
 
 
-
-
-t_tree	*switch_root(t_tree *new_root, t_tree *old_root)
-{
-	t_tree* original_root;
-
-	if (!new_root || !old_root)
-        return (NULL);
-    // Store the original root of new_root
-    original_root = new_root;
-    // Set the root of new_root to the root of old_root
-    new_root = old_root;
-    // Attach the original new_root as the left child of the new root (old_root)
-    new_root->left = original_root;
-
-    return (new_root);
-}
-
-// t_tree	*operator_node_ps(t_lexer *nodes)
+// void	close_all_fd(t_exec *exec)
 // {
-// 	t_tree	*tree;
-
-// 	while (nodes->type == PIPE || nodes->type == AND || nodes->type == OR)
-// 	{
-// 		// addvace to the next tokent to add
-// 		tree = newnode_ps(nodes->value, nodes->type);
-// 	}
-// 	return (tree);
+// 	if (!exec)
+// 		return ;
+// 	if (exec->in_fd != STDIN_FILENO)
+// 		close(exec->in_fd);
+// 	if (exec->out_fd != STDOUT_FILENO)
+// 		close(exec->out_fd);
+// 	close_all_fd(exec->next);
 // }
+
+// void	execute_command(t_exec *exec)
+// {
+// 	if (exec->in_fd != STDIN_FILENO)
+// 		if (dup2(exec->in_fd, STDIN_FILENO) == -1)
+// 			exit (1);
+// 	if (exec->out_fd != STDOUT_FILENO)
+// 		if (dup2(exec->out_fd, STDOUT_FILENO) == -1)
+// 			exit(1);
+// 	close(exec->in_fd);
+// 	close(exec->out_fd);
+// 	if (execve(exec->path, exec->argv, exec->env) == -1)
+// 		exit(1);
+// 	exit(0);
+// }
+
+// void	pipe_exec(t_exec *exec)
+// {
+// 	int	fd[2];
+// 	int	parent;
+// 	int	status;
+
+// 	status = 0;
+// 	if (exec->next && exec->next->token->t_type == PIPE)
+// 	{
+// 		pipe(fd);
+// 		exec->out_fd = fd[1];
+// 		exec->next->in_fd = fd[0];
+// 	}
+// 	if (exec->next && exec->next->token->t_type == LESS)
+// 	{
+// 		close(exec->in_fd);
+// 		exec->in_fd = exec->next->in_fd;
+// 	}
+// 	parent = fork();
+// 	if (!parent)
+// 		execute_command(exec);
+// 	close(exec->in_fd);
+// 	close(exec->out_fd);
+// 	waitpid(parent, &status, 0);
+// }
+
+
