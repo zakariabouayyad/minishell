@@ -92,7 +92,7 @@ void	ft_lstadd_back_double(t_lexer **lst, t_lexer *new);
 /* execution */
 // void	execution(t_tree *node);
 // void	post_order(t_tree *root);
-void	post_order(t_tree *root, char **envp);
+void	execute_syntax_tree(t_tree *root, char **envp);
 
 /*  builtins  */
 void	ft_echo(t_list *head);

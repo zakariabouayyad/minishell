@@ -224,7 +224,7 @@ int main(int ac, char *av[], char *envp[])
 		// tokens = concatenate_nodes(tokens);
 		tree = build_tree_ps(tokens);
 		tree = for_export(tree);
-		post_order(tree, envp);
+		execute_syntax_tree(tree, envp);
 		// print_hh(tree);
 		// print_tree(tree);
 		// printTree(tree, 0);

@@ -2,7 +2,7 @@ NAME = minishell
 
 HEADER = minishell.h
 
-CFLAGS = -g -lreadline
+CFLAGS = -g# -lreadline
 
 CC = cc
 
@@ -23,7 +23,7 @@ OBJ = $(SRC:.c=.o)
 all : $(NAME)
 
 $(NAME) : $(OBJ)
-	$(CC) $(CFLAGS) $(OBJ) -o $(NAME)
+	$(CC) $(CFLAGS) -lreadline $(OBJ) -o $(NAME)
 
 %.o: %.c $(HEADER)
 	$(CC) $(CFLAGS) -c $< -o $@

@@ -115,11 +115,8 @@ void	path(char *str, char *envp[])
 void handle_pipe_operator(t_tree *left_command, t_tree *right_command, char **envp)
 {
     int pipefd[2];
-    if (pipe(pipefd) == -1)
-	{
-        perror("pipe");
-        exit(1);
-    }
+
+    pipe(pipefd);
 
     // Execute the left command
     pid_t left_pid = fork();
@@ -152,33 +149,61 @@ void handle_pipe_operator(t_tree *left_command, t_tree *right_command, char **en
 }
 
 
+
 void	execution(t_tree *node, char **envp)
 {
-	if (strcmp(node->commands->content, "exit") == 0)
-	{
-		printf("exit\n");
-		exit(EXIT_SUCCESS);
-	}
-	if (strcmp(node->commands->content, "echo") == 0)
-		ft_echo(node->commands);
-	else if (strcmp(node->commands->content, "pwd") == 0)
-		ft_pwd();
-	else if (strcmp(node->commands->content, "cd") == 0)
-	{
-		if (ft_cd(node->commands) < 0)
-			printf("No such file or directory\n");
-	}
-	else if (strcmp(node->commands->content, "|") == 0)
-	{
-		handle_pipe_operator(node->left ,node->right, envp);
-	}
+	// if (strcmp(node->commands->content, "exit") == 0)
+	// {
+	// 	printf("exit\n");
+	// 	exit(EXIT_SUCCESS);
+	// }
+	// if (strcmp(node->commands->content, "echo") == 0)
+	// 	ft_echo(node->commands);
+	// else if (strcmp(node->commands->content, "pwd") == 0)
+	// 	ft_pwd();
+	// else if (strcmp(node->commands->content, "cd") == 0)
+	// {
+	// 	if (ft_cd(node->commands) < 0)
+	// 		printf("No such file or directory\n");
+	// }
+	// else if (strcmp(node->commands->content, "|") == 0)
+	// {
+	// 	handle_pipe_operator(node->left ,node->right, envp);
+	// }
 }
 
-void	post_order(t_tree *root, char **envp)
+int	execute_command(t_tree *left_node, t_tree *right_node)
 {
-	if (!root)
+
+}
+int	execute_pipe(t_tree *left_node, t_tree *right_node)
+{
+}
+int	execute_syntax_tree(t_tree *node, char **envp)
+{
+	if (!node)
 		return ;
-	post_order(root->left, envp);
-	post_order(root->right, envp);
-	execution(root, envp);
+	if (node->type == PIPE)
+	{
+		return(execute_pipe(execute_syntax_tree(node->left, envp), execute_syntax_tree(node->right, envp)));
+	}
+	else if (node->type == OR)
+	{
+		if (execute_syntax_tree(node->left, envp) == 0)/*is successful*/
+			return (execute_syntax_tree(node->left, envp));
+		else
+			execute_syntax_tree(node->right, envp);
+	}
+	else if (node->type == AND)
+	{
+		if (execute_syntax_tree(node->left, envp) == 0)/*is successful*/
+			return (execute_syntax_tree(node->right, envp));
+		else
+			execute_syntax_tree(node->left, envp);
+	}
+	else
+	{
+		execute_command(node->left, node->right);
+	}
+	return (0);
 }
