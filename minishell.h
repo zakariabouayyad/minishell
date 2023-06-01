@@ -38,6 +38,12 @@ typedef struct s_list
 	char			*content;
 	struct s_list	*next;
 }					t_list;
+/*fd list*/
+typedef struct s_fd
+{
+	int				content;
+	struct s_fd	*next;
+}					t_fd;
 /*the syntax tree*/
 typedef struct s_tree
 {
@@ -57,6 +63,23 @@ typedef struct 		s_lexer
     struct s_lexer	*next;
     struct s_lexer	*prev;
 }					t_lexer;
+
+/*envp struct*/
+
+typedef	struct  envp
+{
+	int			id;
+	int			includes_in_expt;
+	int			env_order;
+	int			chose;
+	int			located;
+	char		*variable;
+	char		*value;
+	int			shlvl_var;
+	int			end_exp;
+	struct envp	*next;
+}			  	t_envp;
+
 
 /*lexical analysis*/
 t_lexer	*new_token_ps(char *str, t_tokens token);
@@ -92,7 +115,9 @@ void	ft_lstadd_back_double(t_lexer **lst, t_lexer *new);
 /* execution */
 // void	execution(t_tree *node);
 // void	post_order(t_tree *root);
-void	execute_syntax_tree(t_tree *root, char **envp);
+char	*list_to_string(t_list* head);
+// int	execute_syntax_tree(t_tree *node, char **envp, int in, int out, t_fd *fd_list);
+int	execute_syntax_tree(t_tree *node, char **envp, int in, int out, t_fd *fd_list, t_envp **env_lst);
 
 /*  builtins  */
 void	ft_echo(t_list *head);
