@@ -1,3 +1,15 @@
+/* ************************************************************************** */
+/*                                                                            */
+/*                                                        :::      ::::::::   */
+/*   minishell.h                                        :+:      :+:    :+:   */
+/*                                                    +:+ +:+         +:+     */
+/*   By: zbouayya <zbouayya@student.42.fr>          +#+  +:+       +#+        */
+/*                                                +#+#+#+#+#+   +#+           */
+/*   Created: 2023/06/02 17:45:02 by zbouayya          #+#    #+#             */
+/*   Updated: 2023/06/03 14:49:32 by zbouayya         ###   ########.fr       */
+/*                                                                            */
+/* ************************************************************************** */
+
 #ifndef MINISHELL_H
 #define MINISHELL_H
 
@@ -11,7 +23,27 @@
 #include <readline/readline.h>
 #include <readline/history.h>
 #include <sys/stat.h>
+#include <errno.h>
+#include <fcntl.h>
 
+
+#define TMA 1
+#define NAR 255
+#define SUCCESS 0
+#define CORRECT 0
+#define ERROR 1
+
+#define FALSE 0
+#define TRUE 1
+
+#define EXP_W_VAL 1 // variable=value
+#define EXP_N_VAL 2 // variable=
+#define EXP_N_EQU 3 // variable
+#define EXP_W_P_EQU 4 // variable+=value
+
+#define START 2
+#define MIDL 3
+#define END 4
 
 
 typedef enum s_tokens
@@ -37,11 +69,14 @@ typedef struct s_list
 {
 	char			*content;
 	struct s_list	*next;
+	struct s_list	*prev;
 }					t_list;
+
 /*fd list*/
 typedef struct s_fd
 {
-	int				content;
+	int				fd0;
+	int				fd1;
 	struct s_fd	*next;
 }					t_fd;
 /*the syntax tree*/
@@ -64,7 +99,37 @@ typedef struct 		s_lexer
     struct s_lexer	*prev;
 }					t_lexer;
 
-/*envp struct*/
+
+/*struct*/
+
+typedef	struct  utils
+{
+	int			i;
+	int			j;
+	int			k;
+	int			num;
+	int			count;
+	int			*nums;
+	char		*tmp;
+	char		**temp;
+	char		**ret;
+}				t_utils;
+
+typedef	struct  utils_expt_env
+{
+	int			i;
+	int			j;
+	int			num;
+	int			type;
+	int			count;
+	int			cond;
+	char		*var;
+	char		*val;
+	char		*str;
+	char		*tmp;
+}				t_exp;
+
+/*struct envp*/
 
 typedef	struct  envp
 {
@@ -105,7 +170,7 @@ t_list	*newnode_ps(char *data, t_tokens type);
 t_tree	*new_tree_node_ps(t_lexer *nodes);
 void	new_list_node_ps(t_list **new, char *content);
 
-int	ft_lstsize_ps(t_list *lst);
+int		ft_lstsize_ps(t_list *lst);
 t_list	*ft_lstlast_ps(t_list *lst);
 t_list	*ft_lstnew_ps(char *content);
 void	ft_lstadd_back_ps(t_list **lst, t_list *new);
@@ -116,14 +181,38 @@ void	ft_lstadd_back_double(t_lexer **lst, t_lexer *new);
 // void	execution(t_tree *node);
 // void	post_order(t_tree *root);
 char	*list_to_string(t_list* head);
-// int	execute_syntax_tree(t_tree *node, char **envp, int in, int out, t_fd *fd_list);
-int	execute_syntax_tree(t_tree *node, char **envp, int in, int out, t_fd *fd_list, t_envp **env_lst);
+// int	execute_tree(t_tree *node, char **envp, int in, int out, t_fd *fd_list);
+int	execute_tree(t_tree *node, char **envp, int in, int out, t_envp **env_lst, bool pip, t_fd *fd_list);
 
 /*  builtins  */
-void	ft_echo(t_list *head);
-void	ft_pwd(void);
-int	ft_cd(t_list *head);
+// void	ft_echo(t_list *head);
+// void	ft_pwd(void);
+int		ft_cd(t_list *head);
 
+int		ft_lstsize_envp(t_envp *lst);
+void	ft_exit_alpha_error(t_list *tokens);
+void	ft_exit(t_list *tokens);
+void	echo(t_list *tokens);
+void	change_directory(t_list *tokens);
+void	current_working_directory(void);
+void	execute_exprot(t_envp **env_lst, t_list *tokens);
+void	print_envp(t_envp **env_lst, int list_size);
+void	execute_unset(t_envp **env_lst, t_list *tokens, int *list_size);
+
+/*utils */
+void	indexing(t_envp **lst);
+void	swapNodes(t_envp** head, int x, int y);
+void	sort_lst(t_envp **env_lst);
+char	*joining_input(t_list **tokens);
+void	ft_free(char *s1, char *s2, char **array1, char **array2);
+
+/*libft env*/
+t_envp	*ft_lstlast_envp(t_envp *lst);
+void	ft_lstadd_back_envp(t_envp **lst, t_envp *new);
+int	ft_lstsize_envp(t_envp *lst);
+t_envp	*ft_lstnew_envp(char *_variable, char *_value, int _shlvl_var);
+int	ft_strcmp(const char *s1, const char *s2);
+char	*substr(char *s, unsigned int start, int end_char);
 
 /* libft */
 int		ft_isalpha(int c);

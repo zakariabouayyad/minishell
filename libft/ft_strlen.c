@@ -6,7 +6,7 @@
 /*   By: zbouayya <zbouayya@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2022/10/25 12:09:32 by zbouayya          #+#    #+#             */
-/*   Updated: 2023/05/29 20:15:06 by zbouayya         ###   ########.fr       */
+/*   Updated: 2023/06/03 16:13:40 by zbouayya         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -17,9 +17,9 @@ size_t	ft_strlen(const char *s)
 	size_t	i;
 
 	i = 0;
+	if (!s)
+		return (0);
 	while (s[i])
-	{
 		i++;
-	}
 	return (i);
 }

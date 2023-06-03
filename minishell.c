@@ -1,3 +1,15 @@
+/* ************************************************************************** */
+/*                                                                            */
+/*                                                        :::      ::::::::   */
+/*   minishell.c                                        :+:      :+:    :+:   */
+/*                                                    +:+ +:+         +:+     */
+/*   By: zbouayya <zbouayya@student.42.fr>          +#+  +:+       +#+        */
+/*                                                +#+#+#+#+#+   +#+           */
+/*   Created: 2023/06/02 17:44:35 by zbouayya          #+#    #+#             */
+/*   Updated: 2023/06/03 16:12:39 by zbouayya         ###   ########.fr       */
+/*                                                                            */
+/* ************************************************************************** */
+
 #include "minishell.h"
 
 // t_tree	*newnode_ps(int data)
@@ -194,108 +206,6 @@ char	*list_to_string(t_list* head)
 // 	return (tree);
 // }
 
-int	ft_strcmp(const char *s1, const char *s2)
-{
-	size_t			i;
-	unsigned char	*one;
-	unsigned char	*two;
-
-	i = 0;
-	one = (unsigned char *)s1;
-	two = (unsigned char *)s2;
-	while (one[i] != '\0' && two[i] != '\0')
-	{
-		if ((one[i] == '\0' && two[i] != '\0') || (one[i] - two[i] < 0))
-			return (one[i] - two[i]);
-		else if ((one[i] != '\0' && two[i] == '\0') || (one[i] - two[i] > 0))
-			return (one[i] - two[i]);
-		i++;
-	}
-	if (one[i] != '\0' || two[i] != '\0')
-		return (one[i] - two[i]);
-	return (0);
-}
-
-t_envp	*ft_lstlast_envp(t_envp *lst)
-{
-	t_envp	*tmp;
-
-	if (!lst)
-		return (NULL);
-	tmp = lst;
-	while (tmp->next != NULL)
-		tmp = tmp->next;
-	return (tmp);
-}
-
-void	ft_lstadd_back_envp(t_envp **lst, t_envp *new)
-{
-	t_envp	*last;
-
-	if (lst)
-	{
-		if (*lst == NULL)
-			*lst = new;
-		else
-		{
-			last = ft_lstlast_envp(*lst);
-			last->next = new;
-		}
-	}
-}
-
-int	ft_lstsize_envp(t_envp *lst)
-{
-	int	i;
-
-	i = 0;
-	while (lst && i++ >= 0)
-		lst = lst->next;
-	return (i);
-}
-
-t_envp	*ft_lstnew_envp(char *_variable, char *_value, int _shlvl_var)
-{
-	t_envp	*node;
-
-	node = NULL;
-	node = (t_envp *)malloc(sizeof(t_envp));
-	if (!node)
-		return (NULL);
-	node->variable = _variable;
-	node->value = _value;
-	node->shlvl_var = _shlvl_var;
-	node->includes_in_expt = 0;
-	node->env_order = 0;
-	node->end_exp = 0;
-	node->chose = -1;
-	node->next = 0;
-	return (node);
-}
-
-char	*substr(char *s, unsigned int start, int end_char)
-{
-	unsigned int	i;
-	char			*ret;
-
-	if (!s)
-		return (NULL);
-	i = start;
-	while (s[start] != '\0' && s[start] != end_char)
-		start++;
-	if (s[start] == '\0')
-		return (NULL);
-	ret = (char *)malloc((start - i) * sizeof(char));
-	if (!ret)
-		return (NULL);
-	start = i;
-	i = 0;
-	while (s[start] != end_char)
-		ret[i++] = s[start++];
-	ret[i] = '\0';
-	return (ret);
-}
-
 void	indexing_env_order(t_envp **lst)
 {
 	t_envp	*tmp;
@@ -311,79 +221,6 @@ void	indexing_env_order(t_envp **lst)
 		tmp = tmp->next;
 		i++;
 	}
-}
-
-void	indexing(t_envp **lst)
-{
-	t_envp	*tmp;
-	int		i;
-
-	if (!lst)
-		return ;
-	i = 1;
-	tmp = *lst;
-	while (tmp)
-	{
-		tmp->id = i;
-		tmp = tmp->next;
-		i++;
-	}
-}
-
-void	swapNodes(t_envp** head, int x, int y) {
-    // If x and y are the same, no swapping needed
-    if (x == y) return;
-
-    // Initialize pointers for the first and second t_envps
-    t_envp* prevX = NULL;
-    t_envp* currX = *head;
-    t_envp* prevY = NULL;
-    t_envp* currY = *head;
-
-    // Search for nodes x and y and their previous nodes
-    while (currX && currX->id != x) {
-        prevX = currX;
-        currX = currX->next;
-    }
-    while (currY && currY->id != y) {
-        prevY = currY;
-        currY = currY->next;
-    }
-
-    // If either x or y is not found, return
-    if (!currX || !currY) return;
-
-    // Adjust the next pointers to swap the nodes
-    if (prevX) prevX->next = currY;
-    else *head = currY;
-    if (prevY) prevY->next = currX;
-    else *head = currX;
-
-    t_envp* temp = currX->next;
-    currX->next = currY->next;
-    currY->next = temp;
-}
-
-void	sort_lst(t_envp **env_lst)
-{
-	t_envp	*tmp;
-	int		i;
-	int		count;
-
-	i = 0;
-	count = ft_lstsize_envp(*env_lst);
-	while (i < count - 1)
-	{
-		tmp = *env_lst;
-		while (tmp && tmp->next != NULL)
-		{
-			if (ft_strcmp(tmp->variable, tmp->next->variable) > 0)
-				swapNodes(env_lst, tmp->id, tmp->next->id);
-			tmp = tmp->next;
-		}
-		i++;
-	}
-	indexing(env_lst);
 }
 
 void	make_env_list(char *envp[], t_envp **env_lst)
@@ -421,6 +258,7 @@ void	make_env_list(char *envp[], t_envp **env_lst)
 
 int main(int ac, char *av[], char *envp[])
 {
+	bool	pip;
 	int		status;
 	char	*input;
 	t_lexer *tokens;
@@ -451,8 +289,7 @@ int main(int ac, char *av[], char *envp[])
 		// tokens = remove_quote(tokens);
 		// tokens = concatenate_nodes(tokens);
 		tree = build_tree_ps(tokens);
-		t_fd *fd_list = malloc(sizeof(t_fd) * 100);
-		status = execute_syntax_tree(tree, envp, 0, 1, fd_list, &env_lst);
+		status = execute_tree(tree, envp, 0, 1, &env_lst, pip, NULL);
 		// print_hh(tree);
 		// print_tree(tree);
 		// printTree(tree, 0);

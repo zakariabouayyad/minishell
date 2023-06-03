@@ -4,6 +4,8 @@ HEADER = minishell.h
 
 CFLAGS = -g# -lreadline
 
+READLINE = $(shell brew --prefix readline)
+
 CC = cc
 
 RM = rm -f
@@ -16,17 +18,17 @@ LIBSRC = $(addprefix libft/, ft_isdigit.c ft_lstiter.c ft_memcpy.c ft_split.c ft
 		ft_isalpha.c ft_lstclear.c ft_memchr.c ft_putnbr_fd.c ft_strlcat.c ft_strtrim.c\
 		ft_isascii.c ft_lstdelone.c ft_memcmp.c ft_putstr_fd.c ft_strlcpy.c ft_substr.c)
 
-SRC = minishell.c lexer/lexer.c lexer/syntax_checker.c parsing/ast.c parsing/more_ast.c parsing/tree_utils.c execution/exec.c builtins/echo.c builtins/pwd.c builtins/cd.c $(LIBSRC)
+SRC = minishell.c lexer/lexer.c lexer/syntax_checker.c parsing/ast.c parsing/more_ast.c parsing/tree_utils.c execution/exec.c builtins/exit.c builtins/echo.c builtins/pwd.c builtins/cd.c builtins/export.c builtins/utils_lib.c builtins/utils.c builtins/env.c builtins/unset.c $(LIBSRC)
 
 OBJ = $(SRC:.c=.o)
 
 all : $(NAME)
 
 $(NAME) : $(OBJ)
-	$(CC) $(CFLAGS) -lreadline $(OBJ) -o $(NAME)
+	$(CC) $(CFLAGS) -L $(READLINE)/lib -lreadline $(OBJ) -o $(NAME)
 
 %.o: %.c $(HEADER)
-	$(CC) $(CFLAGS) -c $< -o $@
+	$(CC) $(CFLAGS) -I $(READLINE)/include -c $< -o $@
 
 clean :
 	$(RM) $(OBJ)

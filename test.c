@@ -78,4 +78,12 @@
 // 	waitpid(parent, &status, 0);
 // }
 
+#include <unistd.h>
+#include <stdio.h>
 
+int main()
+{
+	printf("%s\n", ttyname(0));
+	printf("%s\n", ttyname(1));
+	printf("%s\n", ttyname(2));
+}
