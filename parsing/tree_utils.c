@@ -1,12 +1,12 @@
 /* ************************************************************************** */
 /*                                                                            */
 /*                                                        :::      ::::::::   */
-/*   node_handle.c                                      :+:      :+:    :+:   */
+/*   tree_utils.c                                       :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
 /*   By: zbouayya <zbouayya@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2023/05/20 15:45:56 by zbouayya          #+#    #+#             */
-/*   Updated: 2023/05/26 12:45:52 by zbouayya         ###   ########.fr       */
+/*   Updated: 2023/06/04 19:54:50 by zbouayya         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -169,4 +169,17 @@ void	new_list_node_ps(t_list **new, char *content)/* correct */
         tmp = ft_lstlast_ps(*new);
         tmp->next = new_node;
     }
+}
+
+void ft_lstclear_double(t_lexer **lst)
+{
+	t_lexer *current = *lst;
+	while (current != NULL)
+	{
+		t_lexer *next = current->next;
+		free(current->value);
+		free(current);
+		current = next;
+	}
+	*lst = NULL;
 }

@@ -6,7 +6,7 @@
 /*   By: zbouayya <zbouayya@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2023/06/02 17:44:05 by zbouayya          #+#    #+#             */
-/*   Updated: 2023/06/03 21:15:42 by zbouayya         ###   ########.fr       */
+/*   Updated: 2023/06/04 14:48:09 by zbouayya         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -365,12 +365,19 @@ int	execute_command(t_tree *node, char **envp, int in, int out, t_fd *fd_list, t
 				ft_exec(cmd, envp);
 			}
 		}
+		else
+		{
+			while (fd_list)
+			{
+				close(fd_list->fd0);
+				close(fd_list->fd1);
+				fd_list = fd_list->next;
+			}
+			waitpid(pid, &status, 0);
+			while (wait(NULL) != -1)
+				;
+		}
 	}
-	// close(in);
-	// close(out);
-	// waitpid(pid, &status, 0);
-	// while (wait(NULL) != -1)
-	// 	;
 	return (status);
 }
 

@@ -6,7 +6,7 @@
 /*   By: zbouayya <zbouayya@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2023/06/02 17:44:51 by zbouayya          #+#    #+#             */
-/*   Updated: 2023/06/02 17:44:52 by zbouayya         ###   ########.fr       */
+/*   Updated: 2023/06/04 19:44:43 by zbouayya         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -100,7 +100,8 @@ t_lexer	*remove_node_ps(t_lexer *head, int space)
 				current->prev->next = tmp;
 			if (tmp)
 				current->next->prev = current->prev;
-			// free(current);
+			free(current->value);
+			free(current);
 			/*move to the next node*/
 			current = tmp;
 		}
@@ -116,7 +117,8 @@ t_lexer	*remove_node_ps(t_lexer *head, int space)
 				current->prev->next = tmp;
 			if (tmp)
 				current->next->prev = current->prev;
-			// free(current);
+			free(current->value);
+			free(current);
 			/*move to the next node*/
 			current = tmp;
 		}

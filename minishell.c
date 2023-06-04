@@ -6,7 +6,7 @@
 /*   By: zbouayya <zbouayya@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2023/06/02 17:44:35 by zbouayya          #+#    #+#             */
-/*   Updated: 2023/06/03 16:12:39 by zbouayya         ###   ########.fr       */
+/*   Updated: 2023/06/04 19:50:09 by zbouayya         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -256,6 +256,19 @@ void	make_env_list(char *envp[], t_envp **env_lst)
 	indexing(env_lst);
 }
 
+void free_list(t_lexer* head)
+{
+	t_lexer* current = head;
+	t_lexer* next;
+	while (current)
+	{
+		next = current->next;
+		free(current->value);
+		free(current);
+		current = next;
+	}
+}
+
 int main(int ac, char *av[], char *envp[])
 {
 	bool	pip;
@@ -274,29 +287,33 @@ int main(int ac, char *av[], char *envp[])
 		add_history(input);
 		if (double_checker_ps(input) == false)
 		{
+			free(input);
 			printf("syntax error\n");
 			continue;
 		}
 		tokens = lexer(input);
+		// free_list(tokens);
 		// remove_whitespace_from_list(tokens);
 		tokens = remove_node_ps(tokens, WHITE_SPACE);
 		if(syntax_checker_ps(tokens) == false)
 		{
-			free(tokens);
+			free_list(tokens);
 			printf("syntax error\n");
 			continue;
 		}
 		// tokens = remove_quote(tokens);
 		// tokens = concatenate_nodes(tokens);
+		/* mn hna lfo9 makayench leaks */
 		tree = build_tree_ps(tokens);
-		status = execute_tree(tree, envp, 0, 1, &env_lst, pip, NULL);
+		// status = execute_tree(tree, envp, 0, 1, &env_lst, pip, NULL);
 		// print_hh(tree);
 		// print_tree(tree);
 		// printTree(tree, 0);
 		// print_lexer_output(tokens);
+		free_list(tokens);
 		// system("leaks minishell");
 	}
 
-	free(input);
+	// free(input);
 	return (status);
 }

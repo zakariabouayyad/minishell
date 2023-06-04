@@ -6,7 +6,7 @@
 /*   By: zbouayya <zbouayya@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2023/06/02 17:45:02 by zbouayya          #+#    #+#             */
-/*   Updated: 2023/06/03 14:49:32 by zbouayya         ###   ########.fr       */
+/*   Updated: 2023/06/04 19:55:40 by zbouayya         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -165,7 +165,7 @@ t_tree *pipe_case_ps(t_lexer **nodes);
 t_tree *cmd_node_ps(t_lexer **nodes);
 t_tree *operator_node_ps(t_lexer **nodes);
 
-
+void	ft_lstclear_double(t_lexer **lst);
 t_list	*newnode_ps(char *data, t_tokens type);
 t_tree	*new_tree_node_ps(t_lexer *nodes);
 void	new_list_node_ps(t_list **new, char *content);
