@@ -1,3 +1,15 @@
+/* ************************************************************************** */
+/*                                                                            */
+/*                                                        :::      ::::::::   */
+/*   utils_lib.c                                        :+:      :+:    :+:   */
+/*                                                    +:+ +:+         +:+     */
+/*   By: kzegani <kzegani@student.1337.ma>          +#+  +:+       +#+        */
+/*                                                +#+#+#+#+#+   +#+           */
+/*   Created: 2023/06/21 21:53:00 by kzegani           #+#    #+#             */
+/*   Updated: 2023/06/21 21:54:58 by kzegani          ###   ########.fr       */
+/*                                                                            */
+/* ************************************************************************** */
+
 #include "../minishell.h"
 
 t_envp	*ft_lstlast_envp(t_envp *lst)
@@ -77,27 +89,4 @@ int	ft_strcmp(const char *s1, const char *s2)
 	if (one[i] != '\0' || two[i] != '\0')
 		return (one[i] - two[i]);
 	return (0);
-}
-
-char	*substr(char *s, unsigned int start, int end_char)
-{
-	unsigned int	i;
-	char			*ret;
-
-	if (!s)
-		return (NULL);
-	i = start;
-	while (s[start] != '\0' && s[start] != end_char)
-		start++;
-	if (s[start] == '\0')
-		return (NULL);
-	ret = (char *)malloc((start - i) * sizeof(char));
-	if (!ret)
-		return (NULL);
-	start = i;
-	i = 0;
-	while (s[start] != end_char)
-		ret[i++] = s[start++];
-	ret[i] = '\0';
-	return (ret);
 }

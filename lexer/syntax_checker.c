@@ -6,126 +6,104 @@
 /*   By: zbouayya <zbouayya@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2023/06/02 17:44:51 by zbouayya          #+#    #+#             */
-/*   Updated: 2023/06/04 19:44:43 by zbouayya         ###   ########.fr       */
+/*   Updated: 2023/06/24 12:58:53 by zbouayya         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
 #include "../minishell.h"
 
-bool	double_checker_ps(char *input)
+bool	close_par_syntax(t_list *tokens)
 {
-	int	i = 0;
-	int	double_quote = 0;
-	int	single_quote = 0;
-	int	par = 0;
-
-	while(input[i])
-	{
-		if (input[i] == '$' && (!input[i + 1] || input[i + 1] == ' '))
-			return (false);
-		else if (input[i] == '"')
-			double_quote++;
-		else if (input[i] == '\'')
-			single_quote++;
-		else if (input[i] == '(')
-		{
-			par++;
-			if (input[i] == '(' && input[i + 1] == ')')
-				return (false);
-		}
-		else if (input[i] == ')')
-			par--;
-		i++;
-	}
-	if ((double_quote % 2 != 0) || (single_quote % 2 != 0) || (par != 0))
+	if (!tokens->prev || (tokens->prev
+			&& tokens->prev->type != WORD
+			&& tokens->prev->type != DOLLAR
+			&& tokens->prev->type != CLOSE_PARENTHESIS)
+		|| (tokens->next
+			&& tokens->next->type != AND
+			&& tokens->next->type != OR
+			&& tokens->next->type != PIPE
+			&& tokens->next->type != CLOSE_PARENTHESIS))
 		return (false);
+	else
+		return (true);
+}
+
+bool	open_par_syntax(t_list *tokens)
+{
+	if (!tokens->next
+		|| (tokens->prev
+			&& tokens->prev->type != AND
+			&& tokens->prev->type != OR
+			&& tokens->prev->type != PIPE
+			&& tokens->prev->type != OPEN_PARENTHESIS)
+		|| (tokens->next
+			&& tokens->next->type != WORD
+			&& tokens->next->type != DOLLAR
+			&& tokens->next->type != OPEN_PARENTHESIS
+			&& !is_redirection(tokens->next->type)))
+		return (false);
+	else
+		return (true);
+}
+
+bool	operators_syntax(t_list *tokens)
+{
+	if ((!tokens->prev || !tokens->next)
+		|| (tokens->next
+			&& tokens->next->type != WORD
+			&& tokens->next->type != DOLLAR
+			&& !is_redirection(tokens->next->type)
+			&& tokens->next->type != OPEN_PARENTHESIS)
+		|| (tokens->prev && (tokens->prev->type != WORD
+				&& tokens->prev->type != DOLLAR
+				&& tokens->prev->type != CLOSE_PARENTHESIS)))
+		return (false);
+	else
+		return (true);
+}
+
+bool	syntax_conitions(t_list *tokens)
+{
+	if (tokens->type == PIPE || tokens->type == OR || tokens->type == AND)
+	{
+		if (operators_syntax(tokens) == false)
+			return (false);
+	}
+	else if (is_redirection(tokens->type))
+	{
+		if (!tokens->next || (tokens->next
+				&& tokens->next->type != WORD && tokens->next->type != DOLLAR
+				&& tokens->next->type != D_QUOTED
+				&& tokens->next->type != S_QUOTED))
+			return (false);
+	}
+	else if (tokens->type == OPEN_PARENTHESIS)
+	{
+		if (open_par_syntax(tokens) == false)
+			return (false);
+	}
+	else if (tokens->type == CLOSE_PARENTHESIS)
+	{
+		if (close_par_syntax(tokens) == false)
+			return (false);
+	}
 	return (true);
 }
 
-bool	syntax_checker_ps(t_lexer *tokens)
+bool	syntax_checker_ps(t_list *tokens)
 {
-	int	flag_par;
+	t_list	*tmp;
+	int		flag_par;
 
 	flag_par = 0;
+	tmp = tokens;
+	if (parentheses_closed(tmp) == false)
+		return (false);
 	while (tokens)
 	{
-		if (tokens->type == PIPE || tokens->type == OR || tokens->type == AND)
-		{
-			if (!tokens->prev || !tokens->next || (tokens->next && tokens->next->type != WORD && tokens->next->type != OPEN_PARENTHESIS) || (tokens->prev && (tokens->prev->type != WORD && tokens->prev->type != CLOSE_PARENTHESIS)))
-				return (false);
-		}
-		else if (tokens->type == INPUT || tokens->type == OUTPUT || tokens->type == OUTPUT_APPEND)
-		{
-			if (!tokens->next || (tokens->next && tokens->next->type != WORD))
-				return (false);
-		}
-		else if (tokens->type == HERE_DOC)
-		{
-			if (!tokens->next || (tokens->next && tokens->next->type != WORD))/*add word as limiter and if there is double quotes it should be expanded*/
-				return (false);
-		}
+		if (syntax_conitions(tokens) == false)
+			return (false);
 		tokens = tokens->next;
 	}
 	return (true);
-}
-
-int	is_word(int token)
-{
-	if (token == WORD || token == D_QUOTED || token == S_QUOTED
-		|| token == DOLLAR)
-		return (1);
-	return (0);
-}
-
-t_lexer	*remove_node_ps(t_lexer *head, int space)
-{
-	t_lexer	*current;
-	t_lexer	*tmp;
-
-	current = head;
-	tmp = NULL;
-	while (current)
-	{
-		if (current->type == space
-			&& (current->next && !is_word(current->next->type)
-			|| current->prev && !is_word(current->prev->type)))
-		{
-			/*store the next node before freeing the current node*/
-			tmp = current->next;
-			/*if the current node is the head*/
-			if (current == head)
-				head = current->next;
-			/*unlink the node from the list*/
-			if (current->prev)
-				current->prev->next = tmp;
-			if (tmp)
-				current->next->prev = current->prev;
-			free(current->value);
-			free(current);
-			/*move to the next node*/
-			current = tmp;
-		}
-		else if (current->type == space && !current->next)
-		{
-			/*store the next node before freeing the current node*/
-			tmp = current->next;
-			/*if the current node is the head*/
-			if (current == head)
-				head = current->next;
-			/*unlink the node from the list*/
-			if (current->prev)
-				current->prev->next = tmp;
-			if (tmp)
-				current->next->prev = current->prev;
-			free(current->value);
-			free(current);
-			/*move to the next node*/
-			current = tmp;
-		}
-		else
-		{
-			current = current->next;
-		}
-	}
-	return (head);
 }
