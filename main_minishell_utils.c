@@ -89,7 +89,7 @@ void printLinkedList(t_list *list)
 {
     while (list)
     {
-        printf("%s|", list->content);
+        printf("*%s*", list->content);
         list = list->next;
     }
     printf("\n");
@@ -158,8 +158,9 @@ void	ft_minishell(t_envp **env_lst)
 		if (if_stars_only(&tokens, input, &stars_cond) == false)
 			if (syntax_check_and_lexer(&tokens, input) == false)
 				continue ;
-		print_list_output(tokens);
+		// print_list_output(tokens);
 		tree = build_tree_ps(tokens);
+		// printTree(tree, 0);
 		if (wild_card(&tree, *env_lst, stars_cond) == 0)
 		{
 			free_list(tokens);
@@ -171,3 +172,7 @@ void	ft_minishell(t_envp **env_lst)
 			(free (input), input = (char *) NULL);
 	}
 }
+
+
+// edits "" error showing fixed
+// syntax double and single quoted string fixed

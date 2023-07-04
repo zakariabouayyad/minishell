@@ -40,8 +40,12 @@ void	execute_in_child(t_tree *node, t_envp **env_lst, t_fd *fd_list,
 		fd_list = fd_list->next;
 	}
 	rederection_case(node, flags.in, flags.out);
+
 	if (!node->commands)
+	{
+		ft_printf("minishell: : command not found\n");
 		exit(0);
+	}
 	if (is_built_in_commands(node->commands))
 		built_in_commands(env_lst, node->commands, true);
 	else
@@ -59,6 +63,7 @@ void	execute_command(t_tree *node, t_envp **env_lst,
 	int		stat;
 
 	stat = is_built_in_commands(node->commands);
+
 	if (flags.pip == false && stat)
 		execute_in_parent(node, env_lst, flags);
 	else if (flags.pip == true || !stat)

@@ -16,6 +16,8 @@ bool	close_par_syntax(t_list *tokens)
 {
 	if (!tokens->prev || (tokens->prev
 			&& tokens->prev->type != WORD
+			&& tokens->prev->type != D_QUOTED
+			&& tokens->prev->type != S_QUOTED
 			&& tokens->prev->type != DOLLAR
 			&& tokens->prev->type != CLOSE_PARENTHESIS)
 		|| (tokens->next
@@ -38,6 +40,8 @@ bool	open_par_syntax(t_list *tokens)
 			&& tokens->prev->type != OPEN_PARENTHESIS)
 		|| (tokens->next
 			&& tokens->next->type != WORD
+			&& tokens->next->type != D_QUOTED
+			&& tokens->next->type != S_QUOTED
 			&& tokens->next->type != DOLLAR
 			&& tokens->next->type != OPEN_PARENTHESIS
 			&& !is_redirection(tokens->next->type)))
@@ -51,11 +55,15 @@ bool	operators_syntax(t_list *tokens)
 	if ((!tokens->prev || !tokens->next)
 		|| (tokens->next
 			&& tokens->next->type != WORD
+			&& tokens->next->type != D_QUOTED
+			&& tokens->next->type != S_QUOTED
 			&& tokens->next->type != DOLLAR
 			&& !is_redirection(tokens->next->type)
 			&& tokens->next->type != OPEN_PARENTHESIS)
 		|| (tokens->prev && (tokens->prev->type != WORD
 				&& tokens->prev->type != DOLLAR
+				&& tokens->prev->type != D_QUOTED
+				&& tokens->prev->type != S_QUOTED
 				&& tokens->prev->type != CLOSE_PARENTHESIS)))
 		return (false);
 	else

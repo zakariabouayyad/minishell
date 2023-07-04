@@ -67,6 +67,8 @@ void	make_nodes(t_list **nodes, t_list *new, t_tree *tree)
 	{
 		new = ft_lstnew_ps((*nodes)->content, (*nodes)->type);
 		ft_lstadd_back_ps(&tree->commands, new);
+		// if (ft_strcmp(tree->commands->content, "\0") == 0)
+			// dprintf(2, "NULL\n");
 	}
 }
 
@@ -76,6 +78,7 @@ t_tree	*cmd_node_ps(t_list **nodes)
 	t_list	*new;
 	t_list	*subnodes;
 	t_list	*tmp;
+
 
 	tree = new_tree_node_ps((*nodes));
 	if ((*nodes)->type == OPEN_PARENTHESIS)

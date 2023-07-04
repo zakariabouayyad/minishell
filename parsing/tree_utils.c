@@ -74,7 +74,7 @@ t_list	*ft_lstnew_ps(char *content, int type)
 
 	new = (t_list *)malloc(sizeof(t_list));
 	if (new == NULL)
-		return (NULL);
+		return (NULL);	
 	new->content = ft_strdup(content);
 	new->type = type;
 	new->next = NULL;
